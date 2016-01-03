@@ -90,7 +90,12 @@ public class MyServlet extends HttpServlet {
 		ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
 		MyInterface myInterface = (MyInterface) ctx.getBean("myClass");
 		
-		myInterface.doProcess();
+		try {
+			myInterface.doProcess();
+		} catch(NullPointerException e) {
+			
+		}
+		
 
 		resp.getWriter().write("Hello world spring!");
 	}

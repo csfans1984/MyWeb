@@ -11,21 +11,49 @@
            				http://www.springframework.org/schema/tx 
            				http://www.springframework.org/schema/tx/spring-tx-4.1.xsd">
 
-	<bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean" scope="singleton">
+	<bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
 		<property name="jndiName">
 			<value>java:comp/env/jdbc/test</value>
 		</property>
 	</bean>
-
-	<bean id="txManager" class="org.springframework.transaction.jta.JtaTransactionManager" scope="singleton">
-		<property name="transactionManagerName">
+	
+	<bean id="dataSource1" class="org.enhydra.jdbc.pool.StandardXAPoolDataSource">
+		<property name="dataSource">
+			<bean id="dataConnection" class="org.enhydra.jdbc.standard.StandardXADataSource">
+				<property name="driverName">
+					<value>com.mysql.jdbc.Driver</value>
+				</property>
+				<property name="url">
+					<value>jdbc:mysql://localhost:3306/test</value>
+				</property>
+				<property name="user">
+					<value>root</value>
+				</property>
+				<property name="password">
+					<value>pwd</value>
+				</property>
+			</bean>
+		</property>
+		<property name="maxSize" value="5"></property>
+		<property name="minSize" value="2"></property>
+	</bean>
+	
+	<bean id="userTransaction" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName">
 			<value>java:comp/UserTransaction</value>
 		</property>
 	</bean>
 
-	<bean id="myClass" class="com.successfactors.I311616.MyClass" scope="singleton">
+	<bean id="txManager" class="org.springframework.transaction.jta.JtaTransactionManager">
+		<!--property name="transactionManagerName">
+			<value>java:comp/UserTransaction</value>
+		</property-->
+		<property name="userTransaction" ref="userTransaction" />
+	</bean>
+
+	<bean id="myClass" class="com.successfactors.I311616.MyClass">
 		<property name="dataSource">
-			<ref bean="dataSource" />
+			<ref bean="dataSource1" />
 		</property>
 		<property name="txManager">
 			<ref bean="txManager" />
